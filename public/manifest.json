@@ -1,22 +1,22 @@
 {
+  "author": "sotiwin",
+  "name": "Todo Sort",
+  "description": "Sort todos by due date",
+  "enableOnMobile": true,
+  "id": "sotiwin-jg6q3lt",
   "manifestVersion": 1,
-  "id": "plugin_template",
-  "name": "Plugin Template",
-  "author": "remnote",
-  "repoUrl": "",
+  "repoUrl": "https://github.com/sotiwin/remnote-todo-sort",
   "version": {
     "major": 0,
     "minor": 0,
     "patch": 1
   },
-  "theme": [],
-  "enableOnMobile": false,
-  "description": "",
   "requestNative": false,
   "requiredScopes": [
     {
       "type": "All",
-      "level": "Read"
+      "level": "ReadCreateModify"
     }
-  ]
+  ],
+  "unlisted": true
 }

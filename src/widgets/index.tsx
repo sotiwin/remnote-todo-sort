@@ -1,42 +1,29 @@
 import { declareIndexPlugin, ReactRNPlugin, WidgetLocation } from '@remnote/plugin-sdk';
 import '../style.css';
 import '../App.css';
+import { sortTodos } from './todo_sort';
 
 async function onActivate(plugin: ReactRNPlugin) {
-  // Register settings
+
   await plugin.settings.registerStringSetting({
-    id: 'name',
-    title: 'What is your Name?',
-    defaultValue: 'Bob',
+    id: 'todoTagName',
+    title: 'Todo tag name',
+    defaultValue: 'Todo',
   });
 
-  await plugin.settings.registerBooleanSetting({
-    id: 'pizza',
-    title: 'Do you like pizza?',
-    defaultValue: true,
+  await plugin.settings.registerStringSetting({
+    id: 'dueDatePropertyeName',
+    title: 'Due date property name',
+    defaultValue: 'Due date',
   });
 
-  await plugin.settings.registerNumberSetting({
-    id: 'favorite-number',
-    title: 'What is your favorite number?',
-    defaultValue: 42,
-  });
-
-  // A command that inserts text into the editor if focused.
   await plugin.app.registerCommand({
-    id: 'editor-command',
-    name: 'Editor Command',
+    id: "sort-todos",
+    name: "Sort todos",
+    description: "Sort todos",
     action: async () => {
-      plugin.editor.insertPlainText('Hello World!');
+      await sortTodos(plugin)
     },
-  });
-
-  // Show a toast notification to the user.
-  await plugin.app.toast("I'm a toast!");
-
-  // Register a sidebar widget.
-  await plugin.app.registerWidget('sample_widget', WidgetLocation.RightSidebar, {
-    dimensions: { height: 'auto', width: '100%' },
   });
 }
 
