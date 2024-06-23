@@ -3,7 +3,8 @@ import { getTagProperties } from './helper';
 
 export interface RemWithTodoDate {
   rem: Rem,
-  dueDate: Date
+  dueDate: Date,
+  isMarker: number
 }
 
 export async function sortTodos(plugin: RNPlugin): Promise<void> {
@@ -20,21 +21,35 @@ export async function sortTodos(plugin: RNPlugin): Promise<void> {
         let dateProp = properties?.find(
             (props) => props.tagPropertyName == dueDatePropertyName)
 
+        let markerProp = properties?.find(
+            (props) => props.tagPropertyName == "marker")
+        let markerPropValue = markerProp?.tagPropertyValueString;
+        if (markerPropValue == null) {
+          markerPropValue = '';
+        }
+
+
         if (dateProp != null) {
           remsWithDate.push({
             rem: todo,
-            dueDate: Date.parse(dateProp.tagPropertyValueString)
+            dueDate: Date.parse(dateProp.tagPropertyValueString),
+            isMarker: (markerPropValue == '' || markerPropValue == 'No') ? 0 : 1
           })
         }
       }
     }
 
     remsWithDate.sort((a, b) => {
-      return a.dueDate.valueOf() - b.dueDate.valueOf()
+      return a.dueDate.valueOf() - b.dueDate.valueOf() || a.isMarker - b.isMarker
     })
+    let deleteParentPromises = [];
+    let setParentPromises = [];
     for (const rem of remsWithDate) {
-      await rem.rem.setParent(null);
-      await rem.rem.setParent(parentRem._id);
+      deleteParentPromises.push(rem.rem.setParent(null));
+      setParentPromises.push(rem.rem.setParent(parentRem._id));
     }
+
+    await Promise.all(deleteParentPromises)
+    await Promise.all(setParentPromises)
   }
 }

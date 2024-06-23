@@ -1,4 +1,4 @@
-import { Rem, RemId, RichTextGlobalNameInterface, RNPlugin } from '@remnote/plugin-sdk';
+import { Rem, RemId, RichText, RichTextGlobalNameInterface, RNPlugin } from '@remnote/plugin-sdk';
 
 export interface TagPropertyModel {
   tagName: string;
@@ -32,10 +32,14 @@ export async function getTagProperties(plugin: RNPlugin, tagName: string, remId:
         let propertyValueString = '';
 
         if (propertyValue.length > 0) {
-          propertyValueRemId = (propertyValue[0] as RichTextGlobalNameInterface)._id!!
-          let valueRem = await plugin.rem.findOne(propertyValueRemId)
-          if (valueRem != undefined) {
-            propertyValueString = valueRem.text!!.toString();
+          if (typeof  propertyValue[0] == 'string') {
+            propertyValueString = propertyValue[0]
+          } else if ('_id' in propertyValue[0]) {
+            propertyValueRemId = (propertyValue[0] as RichTextGlobalNameInterface)._id!!
+            let valueRem = await plugin.rem.findOne(propertyValueRemId)
+            if (valueRem != undefined) {
+              propertyValueString = valueRem.text!!.toString();
+            }
           }
         }
         tagProperties.push({
