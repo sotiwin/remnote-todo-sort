@@ -42,14 +42,16 @@ export async function sortTodos(plugin: RNPlugin): Promise<void> {
     remsWithDate.sort((a, b) => {
       return a.dueDate.valueOf() - b.dueDate.valueOf() || a.isMarker - b.isMarker
     })
+
     let deleteParentPromises = [];
-    let setParentPromises = [];
     for (const rem of remsWithDate) {
       deleteParentPromises.push(rem.rem.setParent(null));
-      setParentPromises.push(rem.rem.setParent(parentRem._id));
     }
 
     await Promise.all(deleteParentPromises)
-    await Promise.all(setParentPromises)
+
+    for (const rem of remsWithDate) {
+      await rem.rem.setParent(parentRem._id);
+    }
   }
 }
