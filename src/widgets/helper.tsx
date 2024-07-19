@@ -32,7 +32,7 @@ export async function getTagProperties(plugin: RNPlugin, tagName: string, remId:
         let propertyValueString = '';
 
         if (propertyValue.length > 0) {
-          if (typeof  propertyValue[0] == 'string') {
+          if (typeof propertyValue[0] == 'string') {
             propertyValueString = propertyValue[0]
           } else if ('_id' in propertyValue[0]) {
             propertyValueRemId = (propertyValue[0] as RichTextGlobalNameInterface)._id!!
@@ -55,4 +55,46 @@ export async function getTagProperties(plugin: RNPlugin, tagName: string, remId:
     return tagProperties
   }
   return undefined
+}
+
+
+export interface RemWithTodoDate {
+  rem: Rem,
+  dueDate: number,
+  isMarker: number,
+  index: number,
+}
+
+export async function mapRemsToRemsWithDate(
+    plugin: RNPlugin,
+    todoTagName: string,
+    dueDatePropertyName: string,
+    todos: Rem[]): Promise<RemWithTodoDate[]> {
+  let remsWithDate = []
+  let index = 0;
+  for (const todo of todos!!) {
+    if (await todo.isTodo()) {
+      let properties = await getTagProperties(plugin, todoTagName, todo._id);
+      let dateProp = properties?.find(
+          (props) => props.tagPropertyName == dueDatePropertyName)
+
+      let markerProp = properties?.find(
+          (props) => props.tagPropertyName == "marker")
+      let markerPropValue = markerProp?.tagPropertyValueString;
+      if (markerPropValue == null) {
+        markerPropValue = '';
+      }
+
+      if (dateProp != null) {
+        remsWithDate.push({
+          rem: todo,
+          dueDate: Date.parse(dateProp.tagPropertyValueString),
+          isMarker: (markerPropValue == '' || markerPropValue == 'No') ? 0 : 1,
+          index: index++
+        } as RemWithTodoDate)
+      }
+    }
+  }
+  return remsWithDate;
+
 }

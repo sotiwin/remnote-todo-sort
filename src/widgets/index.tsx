@@ -1,7 +1,8 @@
-import { declareIndexPlugin, ReactRNPlugin, WidgetLocation } from '@remnote/plugin-sdk';
+import { AppEvents, declareIndexPlugin, ReactRNPlugin, WidgetLocation } from '@remnote/plugin-sdk';
 import '../style.css';
 import '../App.css';
 import { sortTodos } from './todo_sort';
+import { onTodoCompleted } from './todo_completed_handler';
 
 async function onActivate(plugin: ReactRNPlugin) {
 
@@ -25,6 +26,10 @@ async function onActivate(plugin: ReactRNPlugin) {
       await sortTodos(plugin)
     },
   });
+
+  plugin.event.addListener(AppEvents.GlobalRemChanged, undefined, async (data) => {
+    await onTodoCompleted(plugin, data);
+  })
 }
 
 async function onDeactivate(_: ReactRNPlugin) {}
